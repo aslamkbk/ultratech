@@ -1,0 +1,1070 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Finance Management System</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            background-color: #f5f7fa;
+            color: #333;
+            line-height: 1.5;
+            padding: 8px;
+            font-size: 13px;
+        }
+        
+        .container {
+            max-width: 99%;
+            margin: 0 auto;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+        
+        .app-title {
+            width: 100%;
+            text-align: center;
+            margin-bottom: 8px;
+            color: #2c3e50;
+            padding-bottom: 6px;
+            border-bottom: 2px solid #3498db;
+            font-size: 1.5rem;
+        }
+        
+        /* Summary Section - Compact */
+        .summary-section {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 10px;
+            margin-bottom: 12px;
+        }
+        
+        .summary-card {
+            background: white;
+            border-radius: 6px;
+            padding: 10px 8px;
+            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.06);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            min-height: auto;
+        }
+        
+        .summary-value {
+            font-size: 1.2rem;
+            font-weight: 700;
+            margin: 3px 0;
+        }
+        
+        .summary-label {
+            font-size: 0.75rem;
+            color: #7f8c8d;
+            text-align: center;
+        }
+        
+        .positive {
+            color: #27ae60;
+        }
+        
+        .negative {
+            color: #e74c3c;
+        }
+        
+        /* Monthly Search Section */
+        .monthly-search {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-bottom: 10px;
+            padding: 8px;
+            background: white;
+            border-radius: 6px;
+            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.06);
+        }
+        
+        .monthly-search label {
+            font-weight: 600;
+            font-size: 0.8rem;
+            white-space: nowrap;
+        }
+        
+        .month-input {
+            padding: 5px 8px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 0.8rem;
+            width: 100px;
+        }
+        
+        .month-search-btn {
+            padding: 5px 10px;
+            background-color: #3498db;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 0.8rem;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+        
+        .month-search-btn:hover {
+            background-color: #2980b9;
+        }
+        
+        .current-month {
+            font-weight: 600;
+            color: #2c3e50;
+            margin-left: auto;
+            font-size: 0.8rem;
+        }
+        
+        /* Toolbar for actions */
+        .toolbar {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin-bottom: 10px;
+            padding: 8px;
+            background: white;
+            border-radius: 6px;
+            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.06);
+        }
+        
+        .toolbar-btn {
+            padding: 6px 10px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 0.75rem;
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            background-color: #3498db;
+            color: white;
+        }
+        
+        .toolbar-btn:hover {
+            background-color: #2980b9;
+        }
+        
+        .toolbar-btn.delete {
+            background-color: #e74c3c;
+        }
+        
+        .toolbar-btn.delete:hover {
+            background-color: #c0392b;
+        }
+        
+        .toolbar-btn.export {
+            background-color: #2ecc71;
+        }
+        
+        .toolbar-btn.export:hover {
+            background-color: #27ae60;
+        }
+        
+        .toolbar-btn.upload {
+            background-color: #9b59b6;
+        }
+        
+        .toolbar-btn.upload:hover {
+            background-color: #8e44ad;
+        }
+        
+        .toolbar-btn.undo {
+            background-color: #f39c12;
+        }
+        
+        .toolbar-btn.undo:hover {
+            background-color: #d68910;
+        }
+        
+        .toolbar-btn.redo {
+            background-color: #1abc9c;
+        }
+        
+        .toolbar-btn.redo:hover {
+            background-color: #16a085;
+        }
+        
+        /* File upload styling */
+        .file-input-container {
+            position: relative;
+            overflow: hidden;
+            display: inline-block;
+        }
+        
+        .file-input-container input[type="file"] {
+            position: absolute;
+            left: 0;
+            top: 0;
+            opacity: 0;
+            width: 100%;
+            height: 100%;
+            cursor: pointer;
+        }
+        
+        /* Main Content Area */
+        .main-content {
+            display: flex;
+            gap: 12px;
+            flex-wrap: wrap;
+            height: calc(100vh - 220px);
+        }
+        
+        /* Left Panel - Ultra Compact Form */
+        .left-panel {
+            flex: 1;
+            min-width: 300px;
+            max-width: 380px;
+            background: white;
+            border-radius: 8px;
+            padding: 12px;
+            box-shadow: 0 3px 10px rgba(0, 0, 0, 0.08);
+            overflow-y: auto;
+            max-height: 100%;
+        }
+        
+        .form-section {
+            margin-bottom: 10px;
+        }
+        
+        .section-title {
+            font-size: 1rem;
+            color: #3498db;
+            margin-bottom: 8px;
+            padding-bottom: 4px;
+            border-bottom: 1px solid #eee;
+        }
+        
+        .form-row {
+            display: flex;
+            flex-direction: column;
+            margin-bottom: 6px;
+        }
+        
+        .compact-row {
+            display: flex;
+            gap: 6px;
+            margin-bottom: 6px;
+        }
+        
+        .form-group {
+            flex: 1;
+            margin-bottom: 4px;
+        }
+        
+        .form-group.full-width {
+            width: 100%;
+        }
+        
+        .form-group label {
+            display: block;
+            margin-bottom: 2px;
+            font-weight: 600;
+            color: #555;
+            font-size: 0.75rem;
+        }
+        
+        .form-group input, .form-group select, .form-group textarea {
+            width: 100%;
+            padding: 5px 6px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 0.8rem;
+            transition: border 0.3s;
+            height: 28px;
+        }
+        
+        .form-group textarea {
+            height: 40px;
+            resize: vertical;
+        }
+        
+        .form-group input:focus, .form-group select:focus, .form-group textarea:focus {
+            border-color: #3498db;
+            outline: none;
+        }
+        
+        .amount-info {
+            background-color: #f8f9fa;
+            padding: 4px 6px;
+            border-radius: 4px;
+            font-size: 0.7rem;
+            margin-top: 2px;
+            border-left: 2px solid #3498db;
+        }
+        
+        .button-group {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 6px;
+            margin-top: 10px;
+        }
+        
+        .btn {
+            padding: 6px 4px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 0.75rem;
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            height: 28px;
+        }
+        
+        .btn i {
+            margin-right: 4px;
+            font-size: 0.8rem;
+        }
+        
+        .btn-save {
+            background-color: #2ecc71;
+            color: white;
+        }
+        
+        .btn-save:hover {
+            background-color: #27ae60;
+        }
+        
+        .btn-edit {
+            background-color: #3498db;
+            color: white;
+        }
+        
+        .btn-edit:hover {
+            background-color: #2980b9;
+        }
+        
+        .btn-delete {
+            background-color: #e74c3c;
+            color: white;
+        }
+        
+        .btn-delete:hover {
+            background-color: #c0392b;
+        }
+        
+        .btn-clear {
+            background-color: #95a5a6;
+            color: white;
+        }
+        
+        .btn-clear:hover {
+            background-color: #7f8c8d;
+        }
+        
+        /* Right Panel - Compact Transaction History */
+        .right-panel {
+            flex: 2;
+            min-width: 580px;
+            background: white;
+            border-radius: 8px;
+            padding: 12px;
+            box-shadow: 0 3px 10px rgba(0, 0, 0, 0.08);
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+        
+        .search-section {
+            margin-bottom: 12px;
+        }
+        
+        .search-box {
+            width: 100%;
+            padding: 6px 8px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 0.8rem;
+            margin-bottom: 8px;
+            height: 28px;
+        }
+        
+        .filter-section {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 6px;
+            margin-bottom: 10px;
+        }
+        
+        .filter-select {
+            flex: 1;
+            min-width: 100px;
+            padding: 5px 6px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 0.75rem;
+            height: 28px;
+        }
+        
+        .table-container {
+            flex: 1;
+            overflow: auto;
+            border: 1px solid #eee;
+            border-radius: 4px;
+            font-size: 0.75rem;
+        }
+        
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            min-width: 850px;
+            font-size: 0.75rem;
+        }
+        
+        thead {
+            background-color: #2c3e50;
+            color: white;
+            position: sticky;
+            top: 0;
+        }
+        
+        th {
+            padding: 8px 6px;
+            text-align: left;
+            font-weight: 600;
+            cursor: pointer;
+            user-select: none;
+            font-size: 0.75rem;
+            white-space: nowrap;
+        }
+        
+        th i {
+            margin-left: 3px;
+            font-size: 0.7rem;
+        }
+        
+        tbody tr {
+            border-bottom: 1px solid #eee;
+            transition: background-color 0.2s;
+        }
+        
+        tbody tr:hover {
+            background-color: #f9f9f9;
+        }
+        
+        td {
+            padding: 6px;
+            max-width: 120px;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+        
+        .type-sale {
+            background-color: rgba(46, 204, 113, 0.1);
+            color: #27ae60;
+            font-weight: 600;
+            padding: 2px 4px;
+            border-radius: 2px;
+            font-size: 0.7rem;
+        }
+        
+        .type-purchase {
+            background-color: rgba(52, 152, 219, 0.1);
+            color: #2980b9;
+            font-weight: 600;
+            padding: 2px 4px;
+            border-radius: 2px;
+            font-size: 0.7rem;
+        }
+        
+        .type-cash {
+            background-color: rgba(243, 156, 18, 0.1);
+            color: #d35400;
+            font-weight: 600;
+            padding: 2px 4px;
+            border-radius: 2px;
+            font-size: 0.7rem;
+        }
+        
+        .type-bank {
+            background-color: rgba(155, 89, 182, 0.1);
+            color: #8e44ad;
+            font-weight: 600;
+            padding: 2px 4px;
+            border-radius: 2px;
+            font-size: 0.7rem;
+        }
+        
+        .type-payment {
+            background-color: rgba(231, 76, 60, 0.1);
+            color: #c0392b;
+            font-weight: 600;
+            padding: 2px 4px;
+            border-radius: 2px;
+            font-size: 0.7rem;
+        }
+        
+        .type-other {
+            background-color: rgba(149, 165, 166, 0.1);
+            color: #7f8c8d;
+            font-weight: 600;
+            padding: 2px 4px;
+            border-radius: 2px;
+            font-size: 0.7rem;
+        }
+        
+        .cash-positive {
+            color: #27ae60;
+            font-weight: 600;
+        }
+        
+        .cash-negative {
+            color: #e74c3c;
+            font-weight: 600;
+        }
+        
+        .action-buttons {
+            display: flex;
+            gap: 4px;
+        }
+        
+        .action-btn {
+            padding: 3px 5px;
+            border: none;
+            border-radius: 2px;
+            cursor: pointer;
+            font-size: 0.7rem;
+        }
+        
+        .edit-btn {
+            background-color: #3498db;
+            color: white;
+        }
+        
+        .delete-btn {
+            background-color: #e74c3c;
+            color: white;
+        }
+        
+        .form-status {
+            padding: 6px;
+            border-radius: 4px;
+            margin-top: 8px;
+            display: none;
+            text-align: center;
+            font-size: 0.75rem;
+        }
+        
+        .success {
+            background-color: rgba(46, 204, 113, 0.2);
+            color: #27ae60;
+            border: 1px solid #2ecc71;
+        }
+        
+        .error {
+            background-color: rgba(231, 76, 60, 0.2);
+            color: #c0392b;
+            border: 1px solid #e74c3c;
+        }
+        
+        .warning {
+            background-color: rgba(243, 156, 18, 0.2);
+            color: #d35400;
+            border: 1px solid #f39c12;
+        }
+        
+        /* Checkbox for multiple selection */
+        .select-checkbox {
+            width: 15px;
+            height: 15px;
+            cursor: pointer;
+        }
+        
+        .selected-row {
+            background-color: #e3f2fd !important;
+        }
+        
+        /* Responsive adjustments */
+        @media (max-width: 1100px) {
+            .main-content {
+                flex-direction: column;
+                height: auto;
+            }
+            
+            .left-panel, .right-panel {
+                min-width: 100%;
+                max-width: 100%;
+            }
+            
+            .right-panel {
+                min-width: 100%;
+            }
+        }
+        
+        @media (max-width: 768px) {
+            .summary-section {
+                grid-template-columns: repeat(2, 1fr);
+            }
+            
+            .button-group {
+                grid-template-columns: repeat(2, 1fr);
+            }
+            
+            .monthly-search {
+                flex-wrap: wrap;
+            }
+            
+            .current-month {
+                margin-left: 0;
+                width: 100%;
+                text-align: center;
+                margin-top: 5px;
+            }
+        }
+        
+        @media (max-width: 480px) {
+            .summary-section {
+                grid-template-columns: 1fr;
+            }
+            
+            .button-group {
+                grid-template-columns: 1fr;
+            }
+        }
+        
+        .highlight {
+            background-color: #fffacd;
+        }
+        
+        /* Modal for upload */
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+        }
+        
+        .modal-content {
+            background-color: white;
+            margin: 5% auto;
+            padding: 20px;
+            border-radius: 8px;
+            width: 500px;
+            max-width: 90%;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+        }
+        
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+            padding-bottom: 10px;
+            border-bottom: 1px solid #eee;
+        }
+        
+        .modal-title {
+            font-size: 1.2rem;
+            color: #2c3e50;
+        }
+        
+        .close-modal {
+            cursor: pointer;
+            font-size: 1.5rem;
+            color: #7f8c8d;
+        }
+        
+        .close-modal:hover {
+            color: #333;
+        }
+        
+        .modal-body {
+            margin-bottom: 15px;
+        }
+        
+        .modal-footer {
+            display: flex;
+            justify-content: flex-end;
+            gap: 10px;
+        }
+        
+        .modal-btn {
+            padding: 8px 15px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 0.9rem;
+        }
+        
+        .modal-btn.primary {
+            background-color: #3498db;
+            color: white;
+        }
+        
+        .modal-btn.primary:hover {
+            background-color: #2980b9;
+        }
+        
+        .modal-btn.secondary {
+            background-color: #95a5a6;
+            color: white;
+        }
+        
+        .modal-btn.secondary:hover {
+            background-color: #7f8c8d;
+        }
+        
+        .upload-instructions {
+            background-color: #f8f9fa;
+            padding: 10px;
+            border-radius: 4px;
+            margin-top: 10px;
+            font-size: 0.85rem;
+        }
+        
+        .upload-instructions h4 {
+            margin-bottom: 8px;
+            color: #2c3e50;
+        }
+        
+        .upload-instructions ul {
+            margin-left: 20px;
+            margin-bottom: 10px;
+        }
+        
+        .upload-instructions li {
+            margin-bottom: 5px;
+        }
+        
+        .disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1 class="app-title">Finance Management System</h1>
+        
+        <!-- Monthly Search Section -->
+        <div class="monthly-search">
+            <label for="monthSearch">Monthly Summary:</label>
+            <input type="text" id="monthSearch" class="month-input" placeholder="Jan 26" pattern="[a-zA-Z]{3} \d{2,4}">
+            <button class="month-search-btn" id="searchMonthBtn">
+                <i class="fas fa-search"></i> Search
+            </button>
+            <button class="month-search-btn" id="clearMonthBtn">
+                <i class="fas fa-times"></i> Clear
+            </button>
+            <div class="current-month" id="currentMonthDisplay"></div>
+        </div>
+        
+        <!-- Summary Section at Top - Compact -->
+        <div class="summary-section" id="summarySection">
+            <!-- Summary cards will be populated by JavaScript -->
+        </div>
+        
+        <!-- Toolbar for actions -->
+        <div class="toolbar">
+            <button class="toolbar-btn export" id="exportBtn">
+                <i class="fas fa-file-excel"></i> Export to Excel
+            </button>
+            <div class="file-input-container">
+                <button class="toolbar-btn upload" id="uploadBtn">
+                    <i class="fas fa-upload"></i> Upload Data
+                </button>
+                <input type="file" id="fileUpload" accept=".json,.csv" style="display: none;">
+            </div>
+            <button class="toolbar-btn delete" id="multiDeleteBtn" disabled>
+                <i class="fas fa-trash"></i> Delete Selected
+            </button>
+            <button class="toolbar-btn" id="selectAllBtn">
+                <i class="fas fa-check-square"></i> Select All
+            </button>
+            <button class="toolbar-btn" id="deselectAllBtn">
+                <i class="far fa-square"></i> Deselect All
+            </button>
+            <button class="toolbar-btn undo" id="undoBtn" disabled>
+                <i class="fas fa-undo"></i> Undo
+            </button>
+            <button class="toolbar-btn redo" id="redoBtn" disabled>
+                <i class="fas fa-redo"></i> Redo
+            </button>
+        </div>
+        
+        <div class="main-content">
+            <!-- Left Panel - Ultra Compact Form -->
+            <div class="left-panel">
+                <div class="form-section">
+                    <h2 class="section-title">Transaction Entry</h2>
+                    <form id="transactionForm">
+                        <!-- Reordered as requested -->
+                        <div class="compact-row">
+                            <div class="form-group">
+                                <label for="slNo">Sl# (Auto)</label>
+                                <input type="text" id="slNo" readonly>
+                            </div>
+                            <div class="form-group">
+                                <label for="date">Date</label>
+                                <input type="date" id="date" required>
+                            </div>
+                        </div>
+                        
+                        <div class="compact-row">
+                            <div class="form-group">
+                                <label for="type">Type</label>
+                                <select id="type" required>
+                                    <option value="">Select Type</option>
+                                    <option value="Sale">Sale</option>
+                                    <option value="Purchase">Purchase</option>
+                                    <option value="Bank">Bank</option>
+                                    <option value="Cash">Cash</option>
+                                    <option value="Payment">Payment</option>
+                                    <option value="Shop">Shop</option>
+                                    <option value="Vehicle">Vehicle</option>
+                                    <option value="Food">Food</option>
+                                    <option value="Salary">Salary</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label for="billNo">Bill #</label>
+                                <input type="text" id="billNo">
+                                <div id="billSumInfo" class="amount-info" style="display: none;"></div>
+                            </div>
+                        </div>
+                        
+                        <div class="compact-row">
+                            <div class="form-group">
+                                <label for="name">Name</label>
+                                <input type="text" id="name" required>
+                                <div id="nameSumInfo" class="amount-info" style="display: none;"></div>
+                            </div>
+                        </div>
+                        
+                        <div class="form-row">
+                            <div class="form-group full-width">
+                                <label for="description">Description</label>
+                                <textarea id="description" rows="2"></textarea>
+                            </div>
+                        </div>
+                        
+                        <div class="compact-row">
+                            <div class="form-group">
+                                <label for="cashReceived">Cash Received</label>
+                                <input type="number" id="cashReceived" step="0.01" min="0" placeholder="0.00">
+                            </div>
+                            <div class="form-group">
+                                <label for="cashIssued">Cash Issued</label>
+                                <input type="number" id="cashIssued" step="0.01" min="0" placeholder="0.00">
+                            </div>
+                        </div>
+                        
+                        <div class="compact-row">
+                            <div class="form-group">
+                                <label for="sale">Sale</label>
+                                <input type="number" id="sale" step="0.01" min="0" placeholder="0.00">
+                            </div>
+                            <div class="form-group">
+                                <label for="purchase">Purchase</label>
+                                <input type="number" id="purchase" step="0.01" min="0" placeholder="0.00">
+                            </div>
+                        </div>
+                        
+                        <div class="form-status" id="formStatus"></div>
+                        
+                        <div class="button-group">
+                            <button type="button" class="btn btn-save" id="saveBtn"><i class="fas fa-save"></i> Save</button>
+                            <button type="button" class="btn btn-edit" id="editBtn" disabled><i class="fas fa-edit"></i> Edit</button>
+                            <button type="button" class="btn btn-delete" id="deleteBtn" disabled><i class="fas fa-trash"></i> Delete</button>
+                            <button type="button" class="btn btn-clear" id="clearBtn"><i class="fas fa-broom"></i> Clear</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+            
+            <!-- Right Panel - Compact Transaction History -->
+            <div class="right-panel">
+                <div class="search-section">
+                    <input type="text" id="globalSearch" class="search-box" placeholder="Search across all columns...">
+                    
+                    <div class="filter-section">
+                        <select id="filterType" class="filter-select">
+                            <option value="">All Types</option>
+                            <option value="Sale">Sale</option>
+                            <option value="Purchase">Purchase</option>
+                            <option value="Bank">Bank</option>
+                            <option value="Cash">Cash</option>
+                            <option value="Payment">Payment</option>
+                            <option value="Shop">Shop</option>
+                            <option value="Vehicle">Vehicle</option>
+                            <option value="Food">Food</option>
+                            <option value="Salary">Salary</option>
+                        </select>
+                        
+                        <select id="sortColumn" class="filter-select">
+                            <option value="date">Sort by Date</option>
+                            <option value="slNo">Sort by Sl#</option>
+                            <option value="type">Sort by Type</option>
+                            <option value="billNo">Sort by Bill#</option>
+                            <option value="name">Sort by Name</option>
+                            <option value="cash">Sort by Cash</option>
+                            <option value="sale">Sort by Sale</option>
+                            <option value="purchase">Sort by Purchase</option>
+                        </select>
+                        
+                        <select id="sortOrder" class="filter-select">
+                            <option value="desc">Newest First</option>
+                            <option value="asc">Oldest First</option>
+                        </select>
+                    </div>
+                </div>
+                
+                <div class="table-container">
+                    <table id="transactionTable">
+                        <thead>
+                            <tr>
+                                <th style="width: 30px;">
+                                    <input type="checkbox" id="selectAllCheckbox" class="select-checkbox">
+                                </th>
+                                <th data-column="slNo">Sl# <i class="fas fa-sort"></i></th>
+                                <th data-column="date">Date <i class="fas fa-sort"></i></th>
+                                <th data-column="type">Type <i class="fas fa-sort"></i></th>
+                                <th data-column="billNo">Bill# <i class="fas fa-sort"></i></th>
+                                <th data-column="name">Name <i class="fas fa-sort"></i></th>
+                                <th data-column="description">Description</th>
+                                <th data-column="cash">Cash <i class="fas fa-sort"></i></th>
+                                <th data-column="sale">Sale <i class="fas fa-sort"></i></th>
+                                <th data-column="purchase">Purchase <i class="fas fa-sort"></i></th>
+                                <th data-column="updated">Updated</th>
+                                <th style="width: 60px;">Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="transactionTableBody">
+                            <!-- Transactions will be populated here -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Modal for upload -->
+    <div id="uploadModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <div class="modal-title">Upload Data</div>
+                <div class="close-modal" id="closeModal">&times;</div>
+            </div>
+            <div class="modal-body">
+                <div class="upload-instructions">
+                    <h4>Instructions:</h4>
+                    <ul>
+                        <li>Upload JSON or CSV files with transaction data</li>
+                        <li>For CSV: Ensure columns match the transaction format</li>
+                        <li>Data will be merged with existing transactions</li>
+                        <li>Duplicate SL#s will be auto-adjusted</li>
+                    </ul>
+                </div>
+                <div style="margin-top: 15px;">
+                    <label for="modalFileUpload" style="display: block; margin-bottom: 8px; font-weight: 600;">Select file:</label>
+                    <input type="file" id="modalFileUpload" accept=".json,.csv" style="width: 100%; padding: 8px; border: 1px solid #ddd; border-radius: 4px;">
+                </div>
+                <div id="uploadPreview" style="margin-top: 15px; display: none;">
+                    <h4>Preview (first 5 records):</h4>
+                    <div id="previewContent" style="max-height: 150px; overflow-y: auto; background-color: #f8f9fa; padding: 10px; border-radius: 4px; font-size: 0.8rem;"></div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="modal-btn secondary" id="cancelUpload">Cancel</button>
+                <button class="modal-btn primary" id="confirmUpload" disabled>Upload Data</button>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        // Transaction data storage
+        let transactions = [];
+        let currentEditId = null;
+        let slNoCounter = 1;
+        let lastSearchName = "";
+        let selectedTransactions = new Set();
+        let currentMonthSummary = null;
+        
+        // Undo/Redo functionality
+        let history = [];
+        let historyIndex = -1;
+        const MAX_HISTORY = 50;
+        
+        // Month names for parsing
+        const monthNames = ['jan', 'feb', 'mar', 'apr', 'may', 'jun', 'jul', 'aug', 'sep', 'oct', 'nov', 'dec'];
+        const monthDisplayNames = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+        
+        // GitHub Pages compatibility check
+        document.addEventListener('DOMContentLoaded', function() {
+            // Check for localStorage support
+            if (!isLocalStorageSupported()) {
+                showInitialAlert("LocalStorage not fully supported. Some features may be limited.");
+            }
+            
+            loadTransactions();
+            updateTransactionCount();
+            setCurrentDate();
+            updateSummary();
+            updateCurrentMonthDisplay();
+            
+            // Add event listeners
+            document.getElementById('saveBtn').addEventListener('click', saveTransaction);
+            document.getElementById('editBtn').addEventListener('click', updateTransaction);
+            document.getElementById('deleteBtn').addEventListener('click', deleteTransaction);
+            document.getElementById('clearBtn').addEventListener('click', clearForm);
+            
+            // Add event listeners for auto-fill features
+            document.getElementById('billNo').addEventListener('change', checkBillNumber);
+            document.getElementById('name').addEventListener('input', function() {
+                checkName();
+                // When name is typed, search for it in transaction history
+                if (this.value.trim().length > 0) {
+                    searchByName(this.value.trim());
+                } else {
+                    // If name field is cleared, clear the search
+                    document.getElementById('globalSearch').value = '';
+                    filterTransactions();
+                }
+            });
+            
+            // Add event listeners for search and filter
+            document.getElementById('globalSearch').addEventListener('input', filterTransactions);
+            document.getElementById('filterType').addEventListener('change', filterTransactions);
+            document.getElementById('sortColumn').addEventListener('change', sortTransactions);
+            document.getElementById('sortOrder').addEventListener('change', sortTransactions);
+            
+            // Add click event listeners to table headers for sorting
+            document.querySelectorAll('th[data-column]').forEach(header => {
+                header.addEventListener('click', () => {
+                    const column = header.getAttribute('data-column');
+                    document.getElementById('sortColumn').value = column;
+                    sortTransactions();
+                });
+            });
+            
+            // Set focus to type field on page load
+            document.getElementById('type').focus();
+            
+            // Monthly search event listeners
+            document.getElementById('searchMonthBtn').addEventListener('click', searchMonthlySummary);
+            document.getElementById('clearMonthBtn').addEventListener('click', clearMonthlySearch);
+            document.getElementById('monthSearch').addEventListener('keypress', function(e) {
+                if (e.key ===
